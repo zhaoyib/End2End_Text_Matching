@@ -1,12 +1,11 @@
 '''
-@File    :   load_Reranker.py
-@Time    :   2024/03/12 15:59:08
-@LastEdit:   2024/03/15 10:06:43
-@Author  :   YiboZhao 
-@Version :   1.0
-@Site    :   https://github.com/zhaoyib
+@File      :   load_Reranker.py
+@Time      :   2024/03/12 15:59:08
+@LastEdit  :   2024/03/19 10:12:50
+@Author    :   YiboZhao 
+@Version   :   1.0
+@Site      :   https://github.com/zhaoyib
 '''
-
 import logging
 import torch
 import numpy as np
@@ -22,7 +21,7 @@ access_token = "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"
 
 class Reranker:
     def __init__(self,model_name: str='maidalun1020/bce-reranker-base_v1',
-                 use_fp16:bool = False, device:str = "", **kwargs) -> None:
+                 use_fp16:bool = False, device:str = None, **kwargs) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name,token=access_token)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name,**kwargs,token=access_token)
         logger.info(f"Loading from `{model_name}`.")
@@ -89,9 +88,21 @@ class Reranker:
             return score_collection[0]
         return score_collection
     
-    def rerank(self, query:str, passages:List[str], batch_size:int = 32,**kwargs):
-        passages = [p[:12800] for p in passages if isinstance(p,str) and 0 < len(p)]
-        #clease the invalid passages.
+    def rerank(self, query:str, CVs:list, batch_size:int = 32,**kwargs):
+        '''
+        rerank the CVs.
+
+        parameters:
+            query   : the text of Job Define.
+            CVs     : the list of conditate, elements are tuples, (cv_id_index, text, embedding, sim)
+        return:
+            'rerank_passages': sorted_passages,
+            'rerank_scores'  : sorted_scores,
+            'rerank_ids'     : sorted_cvids.
+        '''
+        passages = [item[1] for item in CVs]
+        ids = [item[0] for item in CVs]
+
         if query is None or len(query)==0 or len(passages)==0:
             return {"rerank_passages":[],"rerank_scores":[]}
 
@@ -102,10 +113,13 @@ class Reranker:
             max_length=self.max_length,
             overlap_tokens=self.overlap_tokens,
             )
+        #sentence_pairs,a list of raw texts which merged both query and passage.
+        #sentence_pairs_pids, a list of ids.
         
         #batch inference.
         if self.num_gpus > 1:
             batch_size = batch_size * self.num_gpus
+
 
         tot_scores = []
         with torch.no_grad():
@@ -117,10 +131,12 @@ class Reranker:
                         pad_to_multiple_of=None,
                         return_tensors="pt"
                     )
-                batch_on_device = {k: v.to(self.device) for k, v in batch.items()}
+                #pad the input.
+                batch_on_device = {k: v.to(self.device) for k, v in batch.items()}#put batch to device.
                 scores = self.model(**batch_on_device, return_dict=True).logits.view(-1,).float()
                 scores = torch.sigmoid(scores)
                 tot_scores.extend(scores.cpu().numpy().tolist())
+                #calculate the scores.
         
         # ranking
         merge_scores = [0 for _ in range(len(passages))]
@@ -130,15 +146,17 @@ class Reranker:
         merge_scores_argsort = np.argsort(merge_scores)[::-1]
         sorted_passages = []
         sorted_scores = []
+        sorted_cvids = []
         for mid in merge_scores_argsort:
             sorted_scores.append(merge_scores[mid])
             sorted_passages.append(passages[mid])
-        
+            sorted_cvids.append(ids[mid])
+
         return {
             'rerank_passages': sorted_passages,
             'rerank_scores': sorted_scores,
-            'rerank_ids': merge_scores_argsort.tolist()
-        }#still need to add rerank_passages_id
+            'rerank_ids': sorted_cvids
+        }
     
 
 if __name__ == "__main__":
