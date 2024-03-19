@@ -116,10 +116,3 @@ class Chunker:
             tokens["chunks"].append(self.tokenizer.decode(ids))
         #print(tokens)
         return tokens["chunks"]
-
-if __name__ == "__main__":
-    args = {"mode":"sliding_window","window_size":11,"overlap":5}
-    chunker = Chunker(args)
-    passage = "代码编写以及调试由天下人才公司Peter完成"
-    res = chunker(passage)
-    print(res)
