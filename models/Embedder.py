@@ -1,7 +1,7 @@
 '''
 @File      :   load_Model.py
 @Time      :   2024/03/12 09:47:07
-@LastEdit  :   2024/03/15 10:06:23
+@LastEdit  :   2024/03/18 15:52:59
 @Author    :   shenlei ,annotated by yibozhao
 @Version   :   1.0
 @Original  :   https://github.com/netease-youdao/BCEmbedding/blob/master/BCEmbedding/models/embedding.py
@@ -78,6 +78,8 @@ class Embedder:
         max length can't be changed, default 512, if overflow, it will be truncated.
         normalize to unit means to normalize the embedding to gauss distribution.
         for bce-embedding-base_v1, keep query_instruction as "" is ok
+        return : a list of tuple
+            id, text, embedding
         '''
         ids = list(inputs.keys())
         sentences = list(inputs.values())
@@ -136,7 +138,7 @@ class Embedder:
         if return_numpy and not isinstance(embeddings,ndarray):
             embeddings = embeddings.numpy()
             #change it to numpy.ndarray
-        return dict(zip(ids,embeddings))
+        return list(zip(ids,sentences,embeddings,strict=True))
     
 if __name__ == '__main__':
     model = Embedder()
