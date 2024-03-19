@@ -190,13 +190,3 @@ class Pipeline():
         CVs = self.rough_retrieve(query)
         res = self.exact_retrieve(query,CVs)
         return res
-    
-
-
-if __name__ == "__main__":
-    pipline = Pipeline()
-    #pipline.init_Embedding()
-    res = pipline.retireve("天猫综合客服")
-    res = list(zip(res['rerank_ids'],res['rerank_scores'],res['rerank_passages']))
-    for person in res:
-        print(person)
