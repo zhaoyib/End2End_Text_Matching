@@ -1,13 +1,4 @@
-'''
-TO DO:
-            格式化输出模块,输入为我们模型Reranker的输出,输出为一个JSON格式的文件,具体内容包括:
-            cv_id : 简历的id; 
-            match_text : 和Job Define相匹配的简历中的部分文本;
-            score : 和Job Define的匹配度评分 
-'''
 import os
-
-
 
 def file_reader(folder_path,batch_size = 400):
     '''
@@ -32,12 +23,3 @@ def file_reader(folder_path,batch_size = 400):
             res.update({cv_id:content})
         if res:
             yield res
-
-def format_output(to_output):
-    pass
-
-if __name__ == "__main__":
-    folder_path = "C:/JPM/resume_files"
-    for batch in file_reader(folder_path=folder_path,batch_size=2):
-        print(batch)
-        break
