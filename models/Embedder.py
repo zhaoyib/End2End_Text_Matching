@@ -15,7 +15,7 @@ from typing import List,Dict,Tuple,Type,Union
 from transformers import AutoModel,AutoTokenizer
 from toolkits.logger import logger_wrapper
 logger = logger_wrapper()
-access_token = "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"
+access_token = "Your access token from hugging face."
 
 class Embedder:
     def __init__(self,model_name:str = 'maidalun1020/bce-embedding-base_v1',
@@ -139,11 +139,3 @@ class Embedder:
             embeddings = embeddings.numpy()
             #change it to numpy.ndarray
         return list(zip(ids,sentences,embeddings,strict=True))
-    
-if __name__ == '__main__':
-    model = Embedder()
-    sentences = ['调试由天下人才公司Peter完成','欢迎访问他的github','他的用户名是zhaoyib',"Peter is a good boy","My working experiences which allowed me to gain strong communication skills, creative problem solving and effective customer service."]
-    ids = [0,1,2,3,4]
-    inputs = dict(zip(ids,sentences))
-    embeddings = model.encode(inputs)
-    print(embeddings)
