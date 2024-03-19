@@ -22,5 +22,7 @@
 本项目依赖库已经导出到了requirements.txt文件(如果无法安装，请删除requirements.txt中每行最后一个'='以及之后的内容)，可以通过下面的命令安装：<br>
 `pip install -r requirement.txt`<br>
 同时需要安装Cuda12.1版本以适配本项目使用的GPU计算，如果无法使用GPU计算，则可以选择不安装，使用CPU以较慢速度计算。
+### 声明
+出于隐私方面考虑，项目中所涉及的一切数据均不会对外提供。模型仅供参考学习使用，请勿商用。
 ### 致谢
 感谢有道开发的BCEmbedding以及BCEreranker模型以及相关开源代码。
