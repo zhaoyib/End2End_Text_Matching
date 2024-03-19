@@ -17,7 +17,7 @@ from toolkits.logger import logger_wrapper
 from toolkits.Reranker_preprocess import reranker_tokenizer_preproc
 
 logger = logger_wrapper()
-access_token = "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"
+access_token = "Your access token from hugging face."
 
 class Reranker:
     def __init__(self,model_name: str='maidalun1020/bce-reranker-base_v1',
@@ -157,17 +157,3 @@ class Reranker:
             'rerank_scores': sorted_scores,
             'rerank_ids': sorted_cvids
         }
-    
-
-if __name__ == "__main__":
-    query = "天猫平台Gucci运营"
-    passages = ["王**在职，看看新机会女24岁上海-杨浦区本科工作3年4k电商运营NIKE大中华区总部************立即沟通推荐职位查看联系方式收藏转发求职意向电商运营上海-杨浦区服装/纺织/皮革工作经历NIKE大中华区总部（2020.12-至今,3年3个月）服装/纺织/皮革电商运营所在部门：T-mallDigital薪资：4k职位类别：电商运营职责业绩：负责NIKE淘宝天猫旗舰店的电商运营工作，进行日常货品上下架选择及排墙顺序的安排、参与双十二、双旦、天猫年货节等大型天猫活动的事项跟进，对其他辅助部门下达活动指令。负责每周周会记录工作，同时对每周的生意进行汇总，跟进投入最多的产品销售情况，对竞品公司进行一定的分析，从而协助主管进行营销手段的预判和修正。",
-                "2022/07-2022/11HR实习生?主要负责快消品、零售领域EC、Marketing等市场销售的中高阶职位招聘，包括头部美妆品牌以及日用品、食品品牌等，对top30快消品牌有较为熟悉的了解。?密切关注人才市场信息，进行人才地图绘制和企业定向mapping。?初步面试候选人，与客户方HR沟通以及跟进候选人面试教育经历上海海事大学·国际经济与贸易·本科2021.09-2025.06统招本科"]
-    sentence_pairs = [[query,passage] for passage in passages]
-    model = Reranker(device="cuda:0")
-    scores = model.compute_score(sentence_pairs)
-    print(scores)
-    print(f"VMemory used for compute score {torch.cuda.max_memory_allocated()/1000000} Mb")
-    reranker_result = model.rerank(query,passages)
-    print(reranker_result)
-    print(f"VMemory used for rerank {torch.cuda.max_memory_allocated()/1000000} Mb")
