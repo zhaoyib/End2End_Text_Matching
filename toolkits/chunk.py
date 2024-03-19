@@ -12,7 +12,7 @@ from transformers import AutoTokenizer
 from toolkits.logger import logger_wrapper
 logger = logger_wrapper()
 model_name = 'maidalun1020/bce-embedding-base_v1'
-access_token = "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"
+access_token = "Your access token"
 
 class Chunker:
     def __init__(self,method:dict = {"mode":"sliding_window",
