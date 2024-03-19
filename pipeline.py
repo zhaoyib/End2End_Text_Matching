@@ -1,5 +1,5 @@
 '''
-@File      :   new_pipeline.py
+@File      :   pipeline.py
 @Time      :   2024/03/18 11:39:20
 @LastEdit  :   2024/03/19 09:42:23
 @Author    :   YiboZhao 
@@ -38,16 +38,16 @@ class P():
 
 #the Pipeline of the project.
 class Pipeline():
-    def __init__(self,configs:dict= {"folder_path":"C:/JPM/resume_files",
+    def __init__(self,configs:dict= {"folder_path":"Your folder path",
                                      "cv_embedding_bs":256,"exact_retrive":10,
-                                     "embedding_path":"C:/JPM/code/embedding_files",
+                                     "embedding_path":"Your embedding path",
                                      "rough_retrive":50,"chunker_method":
                                      {"mode":"sliding_window","window_size":300,"overlap":50}}) -> None:
         '''
         init the pipeline, configs optionally include:
-            folder_path     : "C:/JPM/resume_files" as default.
+            folder_path     : "Your folder path" as default.
             cv_embedding_bs : 256 as default.
-            embedding_path  : "C:/JPM/code/embedding_files" as default.
+            embedding_path  : "Your embedding path" as default.
             chunker_method  : {"mode":"sliding_window","window_size":300,"overlap":50} as default.
             rough_retrive   : how many files to return in the first retrival. 50 as default.
             exact_retrive   : how many files to return in the final retrival. 10 as default.
