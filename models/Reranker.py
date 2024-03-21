@@ -88,20 +88,20 @@ class Reranker:
             return score_collection[0]
         return score_collection
     
-    def rerank(self, query:str, CVs:list, batch_size:int = 32,**kwargs):
+    def rerank(self, query:str, Texts:list, batch_size:int = 32,**kwargs):
         '''
-        rerank the CVs.
+        rerank the Texts.
 
         parameters:
-            query   : the text of Job Define.
-            CVs     : the list of conditate, elements are tuples, (cv_id_index, text, embedding, sim)
+            query   : the text of query input.
+            Texts     : the list of conditate, elements are tuples, (text_id_index, text, embedding, sim)
         return:
             'rerank_passages': sorted_passages,
             'rerank_scores'  : sorted_scores,
             'rerank_ids'     : sorted_cvids.
         '''
-        passages = [item[1] for item in CVs]
-        ids = [item[0] for item in CVs]
+        passages = [item[1] for item in Texts]
+        ids = [item[0] for item in Texts]
 
         if query is None or len(query)==0 or len(passages)==0:
             return {"rerank_passages":[],"rerank_scores":[]}
