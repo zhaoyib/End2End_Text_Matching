@@ -39,14 +39,14 @@ class P():
 #the Pipeline of the project.
 class Pipeline():
     def __init__(self,configs:dict= {"folder_path":"Your folder path",
-                                     "cv_embedding_bs":256,"exact_retrive":10,
+                                     "text_embedding_bs":256,"exact_retrive":10,
                                      "embedding_path":"Your embedding path",
                                      "rough_retrive":50,"chunker_method":
                                      {"mode":"sliding_window","window_size":300,"overlap":50}}) -> None:
         '''
         init the pipeline, configs optionally include:
             folder_path     : "Your folder path" as default.
-            cv_embedding_bs : 256 as default.
+            text_embedding_bs : 256 as default.
             embedding_path  : "Your embedding path" as default.
             chunker_method  : {"mode":"sliding_window","window_size":300,"overlap":50} as default.
             rough_retrive   : how many files to return in the first retrival. 50 as default.
@@ -61,11 +61,11 @@ class Pipeline():
 
     def init_Embedding(self):
         '''
-        init the embedding of cvs
-        file: pkl file, will be read to a dict, key : value = cv_id_index : embedding
+        init the embedding of texts
+        file: pkl file, will be read to a dict, key : value = text_id_index : embedding
         '''
         folder_path = self.configs["folder_path"]
-        batch_size = self.configs["cv_embedding_bs"]
+        batch_size = self.configs["text_embedding_bs"]
         total_files = len(os.listdir(folder_path))
         res = []
         count = 0
@@ -76,7 +76,7 @@ class Pipeline():
                 after_chunk.update(self.chunker(one_dict))
             res.extend(self.embedder.encode(after_chunk,batch_size=256,enable_tqdm=False))
             #res is a list of tuple.
-            #tuple is (cv_id_index, text, embedding)
+            #tuple is (text_id_index, text, embedding)
             if len(res) > 36000:
                 with open(f"embedding_files/embeddings_{count}.pkl", "wb") as file:
                     pickle.dump(res, file)
@@ -121,7 +121,7 @@ class Pipeline():
         parameter:
             array_q  : the input query array, numpy.ndarray
         return:
-            rough_res: the relevant CV, a list of tuple, (id, text, embedding, sim)
+            rough_res: the relevant Text, a list of tuple, (id, text, embedding, sim)
             len of the rough_res is self.configs["rough_retrive"], 50 as default.
         '''
         heap = []
@@ -155,24 +155,24 @@ class Pipeline():
         parameters:
             query_text : a str of Job Define, no longer than 200 tokens.
         return:
-            CVs        : a list of CV matching the JD most, the element of list is tuple.
-                         tuple: (cv_id_index, text, embedding, sim)
+            Texts        : a list of Text matching the JD most, the element of list is tuple.
+                         tuple: (text_id_index, text, embedding, sim)
         '''
         q_embedding = self._encode_query(query_text)
-        CVs = self._brutal_search(q_embedding)
-        return CVs
+        Texts = self._brutal_search(q_embedding)
+        return Texts
     
-    def exact_retrieve(self, query_text:str, CVs:list):
+    def exact_retrieve(self, query_text:str, Texts:list):
         '''
         pipeline of exact retrieve, call it to exact retrieve.
 
         parameters:
             query_text : a str of Job Define, no longer than 200 tokens.
         return:
-            CVs        : a list of CV matching the JD most, the element of the list is tuple.
-                         tuple: (cv_id_index, text, embedding, score), ordered by score, desc.
+            Texts        : a list of text matching the JD most, the element of the list is tuple.
+                         tuple: (text_id_index, text, embedding, score), ordered by score, desc.
         '''
-        rerank_res = self.reranker.rerank(query_text,CVs)
+        rerank_res = self.reranker.rerank(query_text,Texts)
         return rerank_res
     
     def retireve(self,query):
@@ -185,8 +185,8 @@ class Pipeline():
             res  : a dict of res, with keys followed
                 'rerank_passages': sorted_passages
                 'rerank_scores'  : sorted_scores
-                'rerank_ids'     : sorted_cvids
+                'rerank_ids'     : sorted_textids
         '''
-        CVs = self.rough_retrieve(query)
-        res = self.exact_retrieve(query,CVs)
+        Texts = self.rough_retrieve(query)
+        res = self.exact_retrieve(query,Texts)
         return res
