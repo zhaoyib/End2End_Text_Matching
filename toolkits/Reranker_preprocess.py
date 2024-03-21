@@ -19,7 +19,7 @@ def reranker_tokenizer_preproc(
 
     parameter:
         query     : str, no longer than 200 tokens.
-        passages  : list of str, which means the CVs chosen by rough retrieval.
+        passages  : list of str, which means the Texts chosen by rough retrieval.
         tokenizer : the tokenizer loaded from pretrained model.
         max_length: the max input length of model.
         overlap_tokens: how may tokens to overlap. 
